@@ -1,4 +1,4 @@
-package crypto;
+package crpyto;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

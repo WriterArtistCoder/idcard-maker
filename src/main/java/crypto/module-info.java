@@ -1,3 +1,0 @@
-module crpyto {
-    exports crypto;
-}
