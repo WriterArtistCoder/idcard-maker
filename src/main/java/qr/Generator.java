@@ -1,66 +1,75 @@
 package qr;
 
+import java.awt.image.BufferedImage;
+
 // Java code to generate QR code
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import crpyto.Encryptor;
+import crpyto.Keys;
 
 public class Generator {
-	private static String[] keys;
-
-	static {
-		ArrayList<String> alKeys = new ArrayList<>();
-		try {
-			File file = new File("src/main/resources/keys.txt");
-			Scanner reader = new Scanner(file);
-			while (reader.hasNextLine()) {
-				alKeys.add(reader.nextLine());
-			}
-			
-			reader.close();
-	        keys = new String[alKeys.size()];
-	        keys = alKeys.toArray(keys);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// Function to create the QR code
-	public static void createQR(String data, String path, String charset, Map hashMap, int height, int width)
+	/**
+	 * Creates a QR code from an arbitrary string and returns it.
+	 * @param data Arbitrary string
+	 * @param charset Charset (e.g. UTF-8)
+	 * @param hashMap Error correction level HashMap
+	 * @param height Image height
+	 * @param width Image width
+	 * @throws WriterException
+	 * @throws IOException
+	 * @returns QR code as a BufferedImage
+	 */
+	public static BufferedImage createQRRaw(String data, String charset, Map hashMap, int height, int width)
 			throws WriterException, IOException {
 		BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset),
 				BarcodeFormat.QR_CODE, width, height);
 
-		MatrixToImageWriter.writeToFile(matrix, path.substring(path.lastIndexOf('.') + 1), new File(path));
+		return MatrixToImageWriter.toBufferedImage(matrix);
 	}
 
-	// Driver code
-	public static void main(String[] args)
-		throws WriterException, IOException,
-			NotFoundException, NoSuchAlgorithmException
-	{
-		// TODO improve docs, print keys
-		// The data that the QR code will contain
-		byte[][] exBoth = Encryptor.encrypt(keys[0], keys[1]);
+	/**
+	 * Creates a QR code from an arbitrary string and saves it as a file.
+	 * @param data Arbitrary string
+	 * @param path Relative filepath to save it at
+	 * @param charset Charset (e.g. UTF-8)
+	 * @param hashMap Error correction level HashMap
+	 * @param height Image height
+	 * @param width Image width
+	 * @throws WriterException
+	 * @throws IOException
+	 */
+	public static void createQRRaw(String data, String path, String charset, Map hashMap, int height, int width)
+			throws WriterException, IOException {
+		BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset),
+				BarcodeFormat.QR_CODE, width, height);
 		
+		MatrixToImageWriter.writeToPath(matrix, path.substring(path.lastIndexOf('.') + 1), Paths.get(path));
+		System.out.println("\nQR Code generated at " + path);
+	}
+
+	public static BufferedImage createQR(String pkey)
+			throws NoSuchAlgorithmException, WriterException, IOException {
+		// The data that the QR code will contain
+		Keys keys = new Keys();
+		byte[][] exBoth = Encryptor.encrypt(keys.getOkey(), pkey);
+
 		String e64Front = Base64.getUrlEncoder().encodeToString(exBoth[0]);
 		String e64Back = Base64.getUrlEncoder().encodeToString(exBoth[1]);
 
@@ -68,23 +77,10 @@ public class Generator {
 		System.out.println("Front QR data:    " + e64Front);
 		System.out.println("Back QR data:     " + e64Back);
 
-		// The path where the image will get saved
-		String path = "src/main/resources/demo.png";
+		Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 
-		// Encoding charset
-		String charset = "UTF-8";
-
-		Map<EncodeHintType, ErrorCorrectionLevel> hashMap
-			= new HashMap<EncodeHintType,
-						ErrorCorrectionLevel>();
-
-		hashMap.put(EncodeHintType.ERROR_CORRECTION,
-					ErrorCorrectionLevel.L);
-
-		// Create the QR code and save
-		// in the specified folder
-		// as a jpg file
-		createQR(e64Front, path, charset, hashMap, 200, 200);
-		System.out.println("QR Code Generated!!! ");
+		hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+		
+		return Generator.createQRRaw(e64Front, "UTF-8", hashMap, 200, 200);
 	}
 }
