@@ -26,7 +26,9 @@ import qr.Generator;
 public class MainUI {
 	JFrame frame;
 	String[] pkeysDrop;
-
+	public static final int state1 = 1;
+	public static final int state2 = 2;
+	public int currentState = state1;
 	public MainUI() {
 		frame = new JFrame("ID Card Maker");
 		frame.setSize(300, 300);
@@ -43,21 +45,13 @@ public class MainUI {
 		mui.startUI();
 	}
 
+	JPanel menu = new JPanel();
 	private void startUI() throws InterruptedException {
-		JPanel menu = new JPanel();
 		menu.setVisible(true);
 		initMenu(menu);
 		frame.add(menu);
 		
-		// TODO fix this
-		// Wait until button pressed to go to next screen
-		wait();
-		
-		frame.remove(menu);
-		JPanel preview = new JPanel();
-		preview.setVisible(true);
-		initPreview(preview);
-		frame.add(preview);
+		// Do the next thing, check if currentState is state2
 	}
 
 	/**
@@ -77,7 +71,15 @@ public class MainUI {
 
 		JButton submit = new JButton("Generate");
 		submit.addActionListener((e) -> {
-			notify();
+			if (currentState == state1) {
+				frame.remove(menu);
+				JPanel preview = new JPanel();
+				preview.setVisible(true);
+				initPreview(preview);
+				
+				frame.add(preview);
+				currentState = state2;
+			}
 		});
 		panel.add(submit);
 	}
