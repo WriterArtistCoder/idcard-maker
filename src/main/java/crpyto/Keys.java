@@ -9,6 +9,9 @@ import java.util.Scanner;
 public class Keys {
 	private String[] keys;
 	
+	// The version number for the way the QR code is encrypted
+	public static final String QR_VERSION = "0.0.1";
+	
 	/**
 	 * Reads the file src/main/resources/keys.txt and initializes Keys.
 	 */

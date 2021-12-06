@@ -27,11 +27,12 @@ import crpyto.Keys;
 public class Generator {
 	/**
 	 * Creates a QR code from an arbitrary string and returns it.
-	 * @param data Arbitrary string
+	 * 
+	 * @param data    Arbitrary string
 	 * @param charset Charset (e.g. UTF-8)
 	 * @param hashMap Error correction level HashMap
-	 * @param height Image height
-	 * @param width Image width
+	 * @param height  Image height
+	 * @param width   Image width
 	 * @throws WriterException
 	 * @throws IOException
 	 * @returns QR code as a BufferedImage
@@ -46,12 +47,13 @@ public class Generator {
 
 	/**
 	 * Creates a QR code from an arbitrary string and saves it as a file.
-	 * @param data Arbitrary string
-	 * @param path Relative filepath to save it at
+	 * 
+	 * @param data    Arbitrary string
+	 * @param path    Relative filepath to save it at
 	 * @param charset Charset (e.g. UTF-8)
 	 * @param hashMap Error correction level HashMap
-	 * @param height Image height
-	 * @param width Image width
+	 * @param height  Image height
+	 * @param width   Image width
 	 * @throws WriterException
 	 * @throws IOException
 	 */
@@ -59,13 +61,20 @@ public class Generator {
 			throws WriterException, IOException {
 		BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset),
 				BarcodeFormat.QR_CODE, width, height);
-		
+
 		MatrixToImageWriter.writeToPath(matrix, path.substring(path.lastIndexOf('.') + 1), Paths.get(path));
 		System.out.println("\nQR Code generated at " + path);
 	}
 
-	public static BufferedImage createQR(String pkey)
-			throws NoSuchAlgorithmException, WriterException, IOException {
+	/**
+	 * Creates the front and back QR codes from a private key and returns them as an array of BufferedImages.
+	 * @param pkey
+	 * @return [front, back]
+	 * @throws NoSuchAlgorithmException
+	 * @throws WriterException
+	 * @throws IOException
+	 */
+	public static BufferedImage[] createQR(String pkey) throws NoSuchAlgorithmException, WriterException, IOException {
 		// The data that the QR code will contain
 		Keys keys = new Keys();
 		byte[][] exBoth = Encryptor.encrypt(keys.getOkey(), pkey);
@@ -80,7 +89,9 @@ public class Generator {
 		Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 
 		hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-		
-		return Generator.createQRRaw(e64Front, "UTF-8", hashMap, 200, 200);
+
+		return new BufferedImage[] {
+				Generator.createQRRaw(Keys.QR_VERSION + ":" + e64Front, "UTF-8", hashMap, 200, 200),
+				Generator.createQRRaw(Keys.QR_VERSION + ":" + e64Back, "UTF-8", hashMap, 200, 200) };
 	}
 }
