@@ -6,3 +6,6 @@ The QR code's text is in the format `<VERSION>:<CODE>`.
   The version number, e.g. `1.2.3`
 * `<CODE>`<br>
   The encrypted key in Base-64: `<ORGANIZATION KEY><HALF OF PERSONAL KEY>`
+
+## See also
+* Useful for checking: https://string-o-matic.com/sha256
