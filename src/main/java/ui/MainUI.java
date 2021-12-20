@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
@@ -38,7 +39,7 @@ public class MainUI {
 
 		// To do: make sure no two keys can be equal (e.g. 359...eee and 359...eee)
 		pkeys = keys.getPkeys();
-		pkeysDrop = Stream.of(keys.getPkeys()).sorted().map(e -> e.substring(0, 3) + "…" + e.substring(e.length() - 3))
+		pkeysDrop = Stream.of(keys.getPkeys()).map(e -> e.substring(0, 3) + "…" + e.substring(e.length() - 3))
 				.toArray(String[]::new);
 	}
 
@@ -82,6 +83,7 @@ public class MainUI {
 
 		JButton submit = new JButton("Generate");
 		submit.addActionListener((e) -> {
+			// Find chosen key
 			s0_chosen_pkey = pkeys[dropdown.getSelectedIndex()];
 			scene = PREVIEW;
 

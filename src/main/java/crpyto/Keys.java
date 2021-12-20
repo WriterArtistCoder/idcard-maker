@@ -45,6 +45,6 @@ public class Keys {
 	 * @return The keys as a String[]
 	 */
 	public String[] getPkeys() {
-		return Arrays.copyOfRange(keys, 0, keys.length);
+		return Arrays.copyOfRange(keys, 1, keys.length);
 	}
 }
