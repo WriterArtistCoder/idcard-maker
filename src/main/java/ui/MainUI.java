@@ -3,6 +3,12 @@ package ui;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -115,10 +121,34 @@ public class MainUI {
 		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		panel.setBorder(padding);
 
-		BufferedImage[] qrCodes = Generator.createQR(s0_chosen_pkey);
+		BufferedImage[] qrCodes = Generator.createQR(s0_chosen_pkey, "src/main/resources/front.png", "src/main/resources/back.png");
+		Path src = Paths.get("src/main/resources/id-card.svg"); // Template image
+		Path temp = Paths.get("src/main/resources/temp-id-card.svg"); // Generated image
+		Charset charset = StandardCharsets.UTF_8;
+
+		String content = new String(Files.readAllBytes(src), charset);
+		String absFront = FileSystems.getDefault().getPath("src/main/resources/front.png").normalize().toAbsolutePath().toString();
+		String absBack = FileSystems.getDefault().getPath("src/main/resources/back.png").normalize().toAbsolutePath().toString();
+		content = content.replaceAll("$FN", "");
+		content = content.replaceAll("$LN", "");
+		content = content.replaceAll("$JOB", "");
+		content = content.replaceAll("$DOB", "");
+		content = content.replaceAll("$EYES", "");
+		content = content.replaceAll("$HAIR", "");
+		content = content.replaceAll("$HEIGHT", "");
+		content = content.replaceAll("$PHOTO", "");
+		content = content.replaceAll("$LICENSE", "");
+		content = content.replaceAll("$EXPIRES", "");
+		content = content.replaceAll("$PROFILE", "");
+		content = content.replaceAll("$BACK", absBack);
+		content = content.replaceAll("$FRONT", absFront);
+		
+		Files.write(temp, content.getBytes(charset));
+		
 		JLabel header = new JLabel("<html><h1>Result</h1><br>");
 		preview.add(header);
 
+		// TODO do not save to file
 		JLabel headerFront = new JLabel("<html><h2>Front QR code</h2></html>");
 		preview.add(headerFront);
 		
