@@ -1,12 +1,7 @@
 package qr;
 
 import java.awt.image.BufferedImage;
-
-// Java code to generate QR code
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -64,7 +59,7 @@ public class Generator {
 				BarcodeFormat.QR_CODE, width, height);
 
 		MatrixToImageWriter.writeToPath(matrix, path.substring(path.lastIndexOf('.') + 1), Paths.get(path));
-		System.out.println("\nQR Code generated at " + path);
+		System.out.println("QR Code generated at " + path);
 		
 		return MatrixToImageWriter.toBufferedImage(matrix);
 	}
@@ -85,11 +80,12 @@ public class Generator {
 		String e64Front = Base64.getUrlEncoder().encodeToString(exBoth[0]);
 		String e64Back = Base64.getUrlEncoder().encodeToString(exBoth[1]);
 		
-		// Print out full QR content TODO
+		// TODO Print out full QR content
 
 		System.out.println("\nENCRYPTED BASE-64");
 		System.out.println("Front QR data:    " + e64Front);
 		System.out.println("Back QR data:     " + e64Back);
+		System.out.println();
 
 		Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 
@@ -119,11 +115,12 @@ public class Generator {
 		String e64Front = Base64.getUrlEncoder().encodeToString(exBoth[0]);
 		String e64Back = Base64.getUrlEncoder().encodeToString(exBoth[1]);
 		
-		// Print out full QR content TODO
+		// TODO Print out full QR content
 
 		System.out.println("\nENCRYPTED BASE-64");
 		System.out.println("Front QR data:    " + e64Front);
 		System.out.println("Back QR data:     " + e64Back);
+		System.out.println();
 
 		Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 
